@@ -17,11 +17,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
 
 /**
  *
@@ -54,6 +57,7 @@ public class FieldsForm extends javax.swing.JFrame {
         initComponents();
         this.fields = fields;
         this.showFieldsLists = showFieldsLists;
+        this.isEmployee = fields.contains("EMPLOYEE_ID");
         fillForm();
     }
 
@@ -97,12 +101,14 @@ public class FieldsForm extends javax.swing.JFrame {
             fields.stream().forEach(x -> createNewField(x));
         }
 
+        if (isEmployee)showEmployeePanel ();
         stepBack = new JButton("<- Back");
         stepBack.addActionListener((java.awt.event.ActionEvent evt) -> {
             stepBack(evt);
         });
         constraints.gridx = 0;
         constraints.gridy = idx_y + 4;
+        constraints.insets = new Insets(10, 10, 10, 10);
         layout.setConstraints(stepBack, constraints);
 
         generateButton = new JButton("Generate MNT");
@@ -111,6 +117,7 @@ public class FieldsForm extends javax.swing.JFrame {
         });
         constraints.gridx = 1;
         constraints.gridy = idx_y + 4;
+        constraints.insets = new Insets(10, 10, 10, 10);
         layout.setConstraints(generateButton, constraints);
         panel.add(stepBack);
         panel.add(generateButton);
@@ -123,38 +130,34 @@ public class FieldsForm extends javax.swing.JFrame {
             idx_x = 0;
             idx_y++;
         }
-        createLabel(x);
-        createTextField(x);
+        createLabel(x, panel, idx_x++, idx_y, layout, constraints);
+        createTextField(x, panel, idx_x++, idx_y, layout, constraints);
     }
 
-    private void createTextField(String x) {
+    private void createTextField(String x, JPanel p, int pos_x, int pos_y, GridBagLayout l, GridBagConstraints c) {
         JTextField textField = new javax.swing.JTextField();
         StringBuilder builder = new StringBuilder(x.toLowerCase());
         builder.append(TEXTFIELD);
         textField.setName(builder.toString());
         textField.setPreferredSize(new Dimension(190, 30));
-        constraints.gridx = idx_x++;
-        constraints.gridy = idx_y;
-        constraints.insets = new Insets(10, 10, 10, 10);
-        layout.setConstraints(textField, constraints);
-        panel.add(textField);
-
+        c.gridx = pos_x;
+        c.gridy = pos_y;
+        c.insets = new Insets(10, 10, 10, 10);
+        l.setConstraints(textField, c);
+        p.add(textField);
         textFieldMap.put(textField.getName(), textField);
+//        System.out.println("textField.getName()->"+textField.getName());
     }
  
-    private void createLabel(String x) {
+    private void createLabel(String x, JPanel p, int pos_x, int pos_y, GridBagLayout l, GridBagConstraints c) {
         JLabel label = new javax.swing.JLabel();
         label.setFont(FONT);
-        constraints.gridx = idx_x++;
-        constraints.gridy = idx_y;
-        constraints.insets = new Insets(10, 10, 10, 10);
-        layout.setConstraints(label, constraints);
+        c.gridx = pos_x;
+        c.gridy = pos_y;
+        c.insets = new Insets(10, 10, 10, 10);
+        l.setConstraints(label, c);
         label.setText(x);
-        panel.add(label);
-        
-        if ("EMPLOYEE_ID".equals(x)) {
-            System.out.println("Employee has been added to the list");
-        }
+        p.add(label);
     }
     
     private void saveMap() {
@@ -170,6 +173,11 @@ public class FieldsForm extends javax.swing.JFrame {
                     }
                 });
 
+        //Employee info
+        data.put("store_idTextField", textFieldMap.get("store_idTextField").getText());
+        data.put("groupMembershipTextField", textFieldMap.get("groupmembershipTextField").getText());
+        data.put("active_dateTextField", textFieldMap.get("active_dateTextField").getText());
+//        data.put("add_dateTextField", textFieldMap.get("add_dateTextField").getText());
         EmployeeTemplateFiller.generateFile(data);
     }
 
@@ -178,6 +186,42 @@ public class FieldsForm extends javax.swing.JFrame {
         this.setVisible(false);
     }
 
+    private void showEmployeePanel () {
+        idx_x = 0;
+        idx_y++;
+        
+        JPanel employeePanel = new JPanel();
+        GridBagConstraints employeeLayoutConstraints = new GridBagConstraints();
+        employeePanel.setPreferredSize(new Dimension(900, 200));
+        GridBagLayout employeeLayout = new GridBagLayout();
+        employeePanel.setLayout(employeeLayout);
+        constraints.gridx = idx_x;
+        constraints.gridy = idx_y;
+        constraints.gridwidth = 4;
+        layout.setConstraints(employeePanel, constraints);
+        panel.add(employeePanel);
+        
+        TitledBorder titledBorder = BorderFactory.createTitledBorder("Employee Information");
+        titledBorder.setTitleJustification(TitledBorder.CENTER);
+        employeePanel.setBorder(titledBorder);
+        
+        createLabel("GROUP_MEMBERSHIP", employeePanel, idx_x++, idx_y, employeeLayout, employeeLayoutConstraints);
+        createTextField("groupMembership", employeePanel, idx_x++, idx_y, employeeLayout,employeeLayoutConstraints);
+        createLabel("PASSWORD", employeePanel, idx_x++, idx_y, employeeLayout, employeeLayoutConstraints);
+        createTextField("password", employeePanel, idx_x++, idx_y, employeeLayout, employeeLayoutConstraints);
+        idx_x = 0;
+        idx_y++;
+        createLabel("STORE_ID", employeePanel, idx_x++, idx_y, employeeLayout, employeeLayoutConstraints);
+        createTextField("store_id", employeePanel, idx_x++, idx_y, employeeLayout, employeeLayoutConstraints);
+        createLabel("ACTIVE_DATE", employeePanel, idx_x++, idx_y, employeeLayout, employeeLayoutConstraints);
+        createTextField("active_date", employeePanel, idx_x++, idx_y, employeeLayout, employeeLayoutConstraints);
+//        idx_x = 0;
+//        idx_y++;
+//        createLabel("ADD_DATE", employeePanel, idx_x++, idx_y, employeeLayout, employeeLayoutConstraints);
+//        createTextField("add_dateTextField", employeePanel, idx_x++, idx_y, employeeLayout, employeeLayoutConstraints);
+    }
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
 }

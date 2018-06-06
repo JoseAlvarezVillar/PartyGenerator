@@ -1,7 +1,11 @@
 INSERT|PARTY|${party_idTextField}|${cust_idTextField}|${party_typcodeTextField}|${salutationTextField}|${first_nameTextField}|${middle_nameTextField}|${last_nameTextField}|${suffixTextField}|${genderTextField}|${social_security_nbrTextField}|${birth_dateTextField}|${anniversary_dateTextField}|${organization_nameTextField}|${organization_typcodeTextField}|${national_tax_idTextField}|${first_name2TextField}|${last_name2TextField}|${address1TextField}|${address2TextField}|${apartmentTextField}|${cityTextField}|${stateTextField}|${postal_codeTextField}|${countryTextField}|${telephone_numberTextField}|${telephone_numberTextField}|${telephone_numberTextField}|${telephone_numberTextField}|${email_addressTextField}|${sign_up_rtl_loc_idTextField}|${allegiance_rtl_loc_idTextField}|${always_emptyTextField}|${contact_flagTextField}|${employee_idTextField}|${commercial_customer_flagTextField}|${picture_uriTextField}|${personal_tax_idTextField}|${contact_flagTextField}|${privacy_card_flagTextField}|${contact_prefTextField}|${void_flagTextField}|${always_emptyTextField}|${always_emptyTextField}|${address3TextField}|${address4TextField}|${preferred_localeTextField}|${prospect_flagTextField}|${rent_flagTextField}|${active_flagTextField}|${email_rcpts_flagTextField}|${neighborhoodTextField}|${countyTextField}
-INSERT|CUST_AFFILIATION|EMP|${party_idTextField}
-INSERT|CUST_ACCT_CARD|12368|${party_idTextField}|||||${party_idTextField}|||||||
-INSERT|SR_PARTY|${party_idTextField}|30|0|0
+INSERT|CUST_AFFILIATION|${cust_group_idTextField}|${party_idTextField}
+<#if (cust_acc_card_nbrTextField)?has_content>
+INSERT|CUST_ACCT_CARD|${cust_acc_card_nbrTextField}|${party_idTextField}|||||${party_idTextField}|||||||
+</#if>
+INSERT|SR_PARTY|${party_idTextField}|${suggested_discountTextField}|${marketing_flagTextField}|${profiling_flagTextField}
 INSERT|PARTY_ADDRESS|${party_idTextField}||||||||CN
-INSERT|EMPLOYEE|${employee_idTextField}|${party_idTextField}|||||A|EVERYONE|EVERYONE|EVERYONE||||||||||||||||||1|0|||EVERYONE|BQAAAAAAAAA=|12368|
-INSERT|EMPLOYEE_STORE|${employee_idTextField}|46121|||0
+<#if (employee_idTextField)?has_content>
+INSERT|EMPLOYEE|${employee_idTextField}|${party_idTextField}|${active_dateTextField}||||A|EVERYONE|EVERYONE|EVERYONE||||||||||||||||||1|0|||EVERYONE|${groupMembershipTextField}|${employee_idTextField}|
+INSERT|EMPLOYEE_STORE|${employee_idTextField}|${store_idTextField}|||0
+</#if>
