@@ -7,6 +7,8 @@ package com.mntgeneration.forms;
 
 import com.mntgeneration.utils.EmployeeTemplateFiller;
 import com.mntgeneration.utils.FieldListFiller;
+import com.mntgeneration.utils.FormUtils;
+import com.mntgeneration.utils.TypeOfGenerationEnum;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -18,16 +20,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 /**
- *
+ * Form which shows the fields selected by the user in the previous screen. 
+ * The MNT will be generated when the 'Generate MNT' button is pressed
  * @author jose.alvarez.villar
  */
 public class FieldsForm extends javax.swing.JFrame {
@@ -38,7 +41,7 @@ public class FieldsForm extends javax.swing.JFrame {
     GridBagLayout layout = null;
     JButton generateButton = null;
     JButton stepBack = null;
-    ShowFieldsLists showFieldsLists = null;
+    ShowFieldsListForm showFieldsLists = null;
     Map<String, JTextField> textFieldMap = new HashMap<>();
     GridBagConstraints constraints = null;
     private int idx_x = 0;
@@ -53,12 +56,13 @@ public class FieldsForm extends javax.swing.JFrame {
         initComponents();
     }
 
-    public FieldsForm(List<String> fields, ShowFieldsLists showFieldsLists) {
+    public FieldsForm(List<String> fields, ShowFieldsListForm showFieldsLists) {
         initComponents();
         this.fields = fields;
         this.showFieldsLists = showFieldsLists;
         this.isEmployee = fields.contains("EMPLOYEE_ID");
         fillForm();
+        FormUtils.centreWindow(this);
     }
 
     /**
@@ -130,9 +134,43 @@ public class FieldsForm extends javax.swing.JFrame {
             idx_x = 0;
             idx_y++;
         }
+   
+//        JPanel _panel = getPanelTypeByParty(x, panel);
+        
+//        createLabel("GROUP_MEMBERSHIP", employeePanel, idx_x++, idx_y, employeeLayout, employeeLayoutConstraints);
+//        System.out.println(x + " comes from " + TypeOfGenerationEnum.getEnumNameByString(FieldListFiller.getOriginOfField(x)).name());
         createLabel(x, panel, idx_x++, idx_y, layout, constraints);
         createTextField(x, panel, idx_x++, idx_y, layout, constraints);
     }
+
+//    private JPanel getPanelTypeByParty(String x, JPanel panel) throws IllegalArgumentException {
+//        TypeOfGenerationEnum type = TypeOfGenerationEnum.getEnumNameByString(FieldListFiller.getOriginOfField(x));
+//        JPanel employeePanel = null;
+//        switch (type) {
+//            case CUSTOMER:
+//                employeePanel = panel;
+//            case EMPLOYEE:
+//                employeePanel = new JPanel();
+//                GridBagConstraints employeeLayoutConstraints = new GridBagConstraints();
+//                employeePanel.setPreferredSize(new Dimension(900, 200));
+//                GridBagLayout employeeLayout = new GridBagLayout();
+//                employeePanel.setLayout(employeeLayout);
+//                constraints.gridx = idx_x;
+//                constraints.gridy = idx_y;
+//                constraints.gridwidth = 4;
+//                layout.setConstraints(employeePanel, constraints);
+//                panel.add(employeePanel);
+//                
+//                TitledBorder titledBorder = BorderFactory.createTitledBorder("Employee Information");
+//                titledBorder.setTitleJustification(TitledBorder.CENTER);
+//                employeePanel.setBorder(titledBorder);
+//        
+//                break;
+//            default:
+//                throw new IllegalArgumentException("Invalid type: " + type.name());
+//        }
+//        return employeePanel;
+//    }
 
     private void createTextField(String x, JPanel p, int pos_x, int pos_y, GridBagLayout l, GridBagConstraints c) {
         JTextField textField = new javax.swing.JTextField();
@@ -162,8 +200,8 @@ public class FieldsForm extends javax.swing.JFrame {
     
     private void saveMap() {
         Map<String, Object> data = new HashMap();
-
-        Collections.list(FieldListFiller.getFields().elements()).stream()
+        DefaultListModel<String> fieldListModel=  this.showFieldsLists.getMainForm().getFieldListModel();
+        Collections.list(fieldListModel.elements()).stream()
                 .map(x -> x.toLowerCase().concat("TextField"))
                 .forEach((String x) -> {
                     if (textFieldMap.containsKey(x)) {
@@ -172,12 +210,15 @@ public class FieldsForm extends javax.swing.JFrame {
                         data.put(x, EMPTY_STRING);
                     }
                 });
-
+        data.put("partyType", this.showFieldsLists.getMainForm().getTypeOfGenerationSelected().name());
         //Employee info
-        data.put("store_idTextField", textFieldMap.get("store_idTextField").getText());
-        data.put("groupMembershipTextField", textFieldMap.get("groupmembershipTextField").getText());
-        data.put("active_dateTextField", textFieldMap.get("active_dateTextField").getText());
+//        if(isEmployee) {
+//            data.put("store_idTextField", textFieldMap.get("store_idTextField").getText());
+//            data.put("groupMembershipTextField", textFieldMap.get("groupmembershipTextField").getText());
+//            data.put("active_dateTextField", textFieldMap.get("active_dateTextField").getText());
 //        data.put("add_dateTextField", textFieldMap.get("add_dateTextField").getText());
+//        }
+        
         EmployeeTemplateFiller.generateFile(data);
     }
 

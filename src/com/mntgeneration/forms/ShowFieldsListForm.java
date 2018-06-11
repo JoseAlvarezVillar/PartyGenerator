@@ -5,7 +5,7 @@
  */
 package com.mntgeneration.forms;
 
-import com.mntgeneration.utils.FieldListFiller;
+import com.mntgeneration.utils.FormUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
@@ -16,16 +16,59 @@ import javax.swing.JOptionPane;
 import javax.swing.ListModel;
 
 /**
- *
+ * Form which lets the user to select those fields he/she wants to populate.
  * @author jose.alvarez.villar
  */
-public class ShowFieldsLists extends javax.swing.JFrame {
+public class ShowFieldsListForm extends javax.swing.JFrame {
 
     /**
      * Creates new form ShowFieldsLists
      */
-    public ShowFieldsLists() {
+    private MainForm mainForm;
+    public ShowFieldsListForm() {
+        this(null);
+    }
+    
+    public ShowFieldsListForm(MainForm mainForm) {
+        this.mainForm = mainForm;
         initComponents();
+        moveBasicFieldsByDefault();
+        FormUtils.centreWindow(this);
+    }
+
+    private void moveBasicFieldsByDefault() {
+        switch (mainForm.getTypeOfGenerationSelected()) {
+            case CUSTOMER:
+                customerFieldsByDefault();
+                break;
+            case EMPLOYEE:
+                employeeFieldsByDefault();
+                break;
+            case CUSTOMER_EMPLOYEE:
+                customerFieldsByDefault();
+                employeeFieldsByDefault();
+                break;
+        }
+    }
+
+    private void employeeFieldsByDefault() {
+        leftList.setSelectedValue("EMPLOYEE_ID", true);
+        addSelectedButtonActionPerformed(null);
+        leftList.setSelectedValue("PARTY_ID", true);
+        addSelectedButtonActionPerformed(null);
+        leftList.setSelectedValue("RETAIL_LOCATION_ID", true);
+        addSelectedButtonActionPerformed(null);
+        leftList.setSelectedValue("GROUP_MEMBER_SHIP_RAW", true);
+        addSelectedButtonActionPerformed(null);
+    }
+
+    private void customerFieldsByDefault() {
+        leftList.setSelectedValue("PARTY_ID", true);
+        addSelectedButtonActionPerformed(null);
+        leftList.setSelectedValue("FIRST_NAME", true);
+        addSelectedButtonActionPerformed(null);
+        leftList.setSelectedValue("LAST_NAME", true);
+        addSelectedButtonActionPerformed(null);
     }
 
     /**
@@ -46,13 +89,14 @@ public class ShowFieldsLists extends javax.swing.JFrame {
         removeSelectedButton = new javax.swing.JButton();
         removeAllButton = new javax.swing.JButton();
         filterTextField = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        filterFieldLabel = new javax.swing.JLabel();
+        nextButton = new javax.swing.JButton();
+        backButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Party Generator");
 
-        leftList.setModel(FieldListFiller.getFields());
+        leftList.setModel(mainForm.getFieldListModel());
         jScrollPane1.setViewportView(leftList);
 
         rightList.setModel(new DefaultListModel<String>());
@@ -92,13 +136,20 @@ public class ShowFieldsLists extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jLabel1.setText("Filter by field:");
+        filterFieldLabel.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        filterFieldLabel.setText("Filter by field:");
 
-        jButton1.setText("Next Step");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        nextButton.setText("Next");
+        nextButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                nextButtonActionPerformed(evt);
+            }
+        });
+
+        backButton.setText("Back");
+        backButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                backButtonActionPerformed(evt);
             }
         });
 
@@ -107,12 +158,12 @@ public class ShowFieldsLists extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(31, 31, 31)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(31, 31, 31)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(filterFieldLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(filterTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -126,18 +177,19 @@ public class ShowFieldsLists extends javax.swing.JFrame {
                             .addComponent(removeAllButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(34, 34, 34)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(backButton, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(nextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(28, Short.MAX_VALUE)
+                .addContainerGap(18, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(filterTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                    .addComponent(filterFieldLabel))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -152,8 +204,10 @@ public class ShowFieldsLists extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(removeAllButton)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
-                .addGap(6, 6, 6))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(nextButton)
+                    .addComponent(backButton))
+                .addContainerGap())
         );
 
         pack();
@@ -161,7 +215,7 @@ public class ShowFieldsLists extends javax.swing.JFrame {
 
     private void addAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addAllButtonActionPerformed
        
-        rightList.setModel(FieldListFiller.getFields());
+        rightList.setModel(mainForm.getFieldListModel());
         leftList.setModel(new DefaultListModel());
     }//GEN-LAST:event_addAllButtonActionPerformed
 
@@ -183,11 +237,11 @@ public class ShowFieldsLists extends javax.swing.JFrame {
 
     private void removeAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeAllButtonActionPerformed
         rightList.setModel(new DefaultListModel());
-        leftList.setModel(FieldListFiller.getFields());
+        leftList.setModel(mainForm.getFieldListModel());
     }//GEN-LAST:event_removeAllButtonActionPerformed
 
     private DefaultListModel getElementsByList () {
-        DefaultListModel dlmTotal = FieldListFiller.getFields();
+        DefaultListModel dlmTotal = mainForm.getFieldListModel();
         ListModel<String> rightModel = rightList.getModel();
         for (int i = 0; i < rightModel.getSize(); i++) {
             dlmTotal.removeElement(rightModel.getElementAt(i));
@@ -207,17 +261,22 @@ public class ShowFieldsLists extends javax.swing.JFrame {
         leftList.setModel(newDlm);
     }//GEN-LAST:event_filterTextFieldKeyReleased
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
         DefaultListModel dlm = getCurrentModel(rightList);
         if (!dlm.isEmpty()) {
             FieldsForm form = new FieldsForm(Collections.list(dlm.elements()), this);
-        form.setVisible(true);
-        this.setVisible(false);
+            form.setVisible(true);
+            this.setVisible(false);
         } else {
             JOptionPane.showMessageDialog(this, "Please fill the second list with some field", "Don't be lazy", JOptionPane.ERROR_MESSAGE);
         }
         
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_nextButtonActionPerformed
+
+    private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
+        mainForm.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_backButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -236,8 +295,9 @@ public class ShowFieldsLists extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ShowFieldsLists.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ShowFieldsListForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
         
         //</editor-fold>
@@ -245,7 +305,7 @@ public class ShowFieldsLists extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ShowFieldsLists().setVisible(true);
+                new ShowFieldsListForm().setVisible(true);
             }
         });
     }
@@ -274,15 +334,21 @@ public class ShowFieldsLists extends javax.swing.JFrame {
         elements.forEach(dlm::removeElement);    
         list.setModel(dlm);
     }
+        
+    public MainForm getMainForm() {
+        return mainForm;
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addAllButton;
     private javax.swing.JButton addSelectedButton;
+    private javax.swing.JButton backButton;
+    private javax.swing.JLabel filterFieldLabel;
     private javax.swing.JTextField filterTextField;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JList<String> leftList;
+    private javax.swing.JButton nextButton;
     private javax.swing.JButton removeAllButton;
     private javax.swing.JButton removeSelectedButton;
     private javax.swing.JList<String> rightList;
